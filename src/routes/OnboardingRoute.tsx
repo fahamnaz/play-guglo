@@ -140,7 +140,7 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
             <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-violet-500/90 p-12 shadow-[0_20px_0_rgba(76,29,149,0.8)] backdrop-blur-sm">
               <span className="text-[100px] animate-bounce drop-shadow-xl">✨</span>
               <h1 className="mt-6 text-6xl font-black text-white" style={{ fontFamily: HEADING_FONT, WebkitTextStroke: '3px #8b5cf6', textShadow: '0 8px 0 rgba(0,0,0,0.2)' }}>
-                Welcome to PlaySpark!
+                Welcome to Play Guglo!
               </h1>
               <p className="mt-6 text-2xl font-bold text-violet-100" style={{ fontFamily: BODY_FONT }}>
                 Before we play, let's build a magical learning path just for you!

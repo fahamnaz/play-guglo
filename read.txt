@@ -487,3 +487,18 @@ but instead of letters we will use basic maths equation, use json data create 10
  then easy level will be given. (I want to show reinforcement learnning to judges ) 
  implement it very well manner , give me complete working code 
 
+p6:
+before home screen I want to implement a onbaording screens use , use gardenbg2.jpeg for background, show onbaordings questions 
+to child like, these all are onbaording data we need to take once app is loaded "age_band = "preschool"
+Age → Developmental Band
+5.5 years maps to the preschool band. This selects the correct developmental milestone priors for all 11 skills.
+preferred_modality = "auditory"
+Interests → Preferred Modality
+music + stories → auditory modality preferred. The game engine will serve audio-first tasks by default.
+phonics + counting priors boosted +0.05
+Goals → Prior Adjustment
+Stated goals suggest focus areas, not mastery. A tiny +0.05 adjustment signals these should be prioritised first in the session plan.
+confidence = 0.40 (cold start)
+All Estimates Are Uncertain
+No gameplay data yet. Every skill estimate carries confidence" make it funny and interactive way, make buttton cartoonish and folllow our design theme , after all show a loading that craetes a personailized learning for child . give me 
+compleet working code.

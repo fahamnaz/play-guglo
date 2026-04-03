@@ -410,7 +410,7 @@ export function HomeScreen() {
               className="mt-5 text-5xl font-black leading-[0.95] sm:text-7xl lg:text-8xl"
               style={homeTitleStyle}
             >
-              PlaySpark
+              Play Guglo
               <br />
               Learning Land
             </h1>

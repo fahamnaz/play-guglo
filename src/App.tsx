@@ -1,5 +1,5 @@
 import { Link, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HomeScreen } from './components/home/HomeScreen';
 import { OnboardingRoute } from './routes/OnboardingRoute';
 import { ScienceSolarRoute } from './routes/ScienceSolarRoute';
@@ -26,15 +26,30 @@ function NotFoundPage() {
   );
 }
 
-// SMART WRAPPER: Shows onboarding on every fresh app load
+// SMART WRAPPER: Checks memory to see if onboarding is already done
 function RootWrapper() {
   const [hasOnboarded, setHasOnboarded] = useState(false);
+  const [isChecking, setIsChecking] = useState(true); // Prevents brief flash of wrong screen
+
+  useEffect(() => {
+    // Check the browser's memory when the app first loads
+    const savedState = localStorage.getItem('playspark_onboarded');
+    if (savedState === 'true') {
+      setHasOnboarded(true);
+    }
+    setIsChecking(false); // Done checking memory
+  }, []);
+
+  // Show nothing for a split second while we check memory
+  if (isChecking) return null;
 
   if (!hasOnboarded) {
     return (
       <OnboardingRoute 
         onComplete={() => {
-          setHasOnboarded(true); // Switches to home screen when done
+          // Save a tag in memory so we skip this next time!
+          localStorage.setItem('playspark_onboarded', 'true');
+          setHasOnboarded(true); 
         }} 
       />
     );
@@ -46,7 +61,7 @@ function RootWrapper() {
 export default function App() {
   return (
     <Routes>
-      {/* Root Route starts with the wrapper */}
+      {/* Root Route starts with the smart wrapper */}
       <Route path="/" element={<RootWrapper />} />
       
       <Route path="/science-solar" element={<ScienceSolarRoute />} />
