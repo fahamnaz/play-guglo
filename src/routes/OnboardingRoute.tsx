@@ -12,6 +12,7 @@ interface OnboardingRouteProps {
 
 export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
   const [step, setStep] = useState(0);
+  const [email, setEmail] = useState('');
   const [age, setAge] = useState<number | null>(null);
   const [interests, setInterests] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
@@ -37,15 +38,16 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
   // Mascot interactions per step
   useEffect(() => {
     if (step === 0) speak("Hi! I'm your PlaySpark buddy! Let's build your world!", 'happy');
-    if (step === 1) speak("How many years old are you?", 'idle');
-    if (step === 2) speak("What are your favorite things to do?", 'happy');
-    if (step === 3) speak("What magic shall we learn today?", 'idle');
-    if (step === 4) speak("Building your magical learning path!", 'happy');
+    if (step === 1) speak("Ask a grown-up to help! What's their email?", 'idle');
+    if (step === 2) speak("How many years old are you?", 'idle');
+    if (step === 3) speak("What are your favorite things to do?", 'happy');
+    if (step === 4) speak("What magic shall we learn today?", 'idle');
+    if (step === 5) speak("Building your magical learning path!", 'happy');
   }, [step, speak]);
 
   // Loading Screen Logic
   useEffect(() => {
-    if (step === 4) {
+    if (step === 5) {
       const texts = [
         "Analyzing age band priorities...",
         "Setting up auditory modality...",
@@ -67,6 +69,7 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
           
           // Generate the backend JSON data
           const onboardingData = {
+            parent_email: email,
             age_band: age && age <= 5 ? "preschool" : "early_primary",
             preferred_modality: interests.includes('music') || interests.includes('stories') ? "auditory" : "visual",
             priors_boosted: goals,
@@ -80,7 +83,7 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
       
       return () => clearInterval(interval);
     }
-  }, [step, age, interests, goals, onComplete]);
+  }, [step, email, age, interests, goals, onComplete]);
 
   const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
     setter(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
@@ -102,13 +105,15 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
 
   const nextStep = () => { playSound(); setStep(s => s + 1); };
 
-  const CartoonButton = ({ children, onClick, active = false, color = 'bg-white' }: any) => (
+  const CartoonButton = ({ children, onClick, active = false, color = 'bg-white', disabled = false }: any) => (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95, y: 4, boxShadow: '0 0px 0 rgba(0,0,0,0)' }}
-      onClick={onClick}
+      whileHover={!disabled ? { scale: 1.05 } : {}}
+      whileTap={!disabled ? { scale: 0.95, y: 4, boxShadow: '0 0px 0 rgba(0,0,0,0)' } : {}}
+      onClick={!disabled ? onClick : undefined}
       className={`rounded-3xl border-[6px] border-white px-8 py-6 text-3xl font-black shadow-[0_12px_0_rgba(0,0,0,0.15)] transition-colors
-        ${active ? 'bg-green-400 text-white shadow-[0_12px_0_rgba(21,128,61,0.8)]' : `${color} text-slate-700 hover:bg-slate-50`}
+        ${disabled ? 'bg-slate-200 text-slate-400 opacity-70 cursor-not-allowed' : 
+          active ? 'bg-green-400 text-white shadow-[0_12px_0_rgba(21,128,61,0.8)]' : 
+          `${color} text-slate-700 hover:bg-slate-50`}
       `}
       style={{ fontFamily: HEADING_FONT }}
     >
@@ -118,7 +123,6 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-sky-200 flex items-center justify-center">
-      {/* Background Image: using gardenbg2.jpeg as requested */}
       <img src="/gardenbg2.jpeg" alt="Garden Theme" className="absolute inset-0 h-full w-full object-cover scale-105 blur-[3px]" />
       <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-sky-300/50 backdrop-blur-[2px]" /> 
       
@@ -147,8 +151,39 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
             </div>
           )}
 
-          {/* STEP 1: AGE */}
+          {/* STEP 1: PARENT EMAIL */}
           {step === 1 && (
+            <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-orange-400/90 p-12 shadow-[0_20px_0_rgba(194,65,12,0.8)] backdrop-blur-sm">
+              <h2 className="text-5xl font-black text-white" style={{ fontFamily: HEADING_FONT, WebkitTextStroke: '2px #c2410c', textShadow: '0 6px 0 rgba(0,0,0,0.15)' }}>
+                Ask a Grown-Up!
+              </h2>
+              <p className="mt-4 text-xl font-bold text-orange-50" style={{ fontFamily: BODY_FONT }}>
+                What is your parent's email address?
+              </p>
+              
+              <div className="mt-8 w-full max-w-lg relative">
+                <input 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="parent@email.com"
+                  className="w-full rounded-[24px] border-[6px] border-white bg-white/95 px-6 py-5 text-3xl font-black text-slate-700 placeholder-slate-300 shadow-[0_10px_0_rgba(0,0,0,0.15)] outline-none transition-all focus:border-yellow-400 focus:ring-0 text-center"
+                  style={{ fontFamily: BODY_FONT }}
+                />
+              </div>
+
+              <CartoonButton 
+                onClick={nextStep} 
+                disabled={!email.includes('@') || email.length < 5}
+                color="bg-yellow-400 mt-10 text-yellow-950"
+              >
+                Next! ➡️
+              </CartoonButton>
+            </div>
+          )}
+
+          {/* STEP 2: AGE */}
+          {step === 2 && (
             <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-sky-400/90 p-12 shadow-[0_20px_0_rgba(2,132,199,0.8)] backdrop-blur-sm">
               <h2 className="text-5xl font-black text-white" style={{ fontFamily: HEADING_FONT, WebkitTextStroke: '2px #0284c7', textShadow: '0 6px 0 rgba(0,0,0,0.15)' }}>
                 How old are you?
@@ -163,8 +198,8 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
             </div>
           )}
 
-          {/* STEP 2: INTERESTS */}
-          {step === 2 && (
+          {/* STEP 3: INTERESTS */}
+          {step === 3 && (
             <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-pink-400/90 p-12 shadow-[0_20px_0_rgba(190,24,93,0.8)] backdrop-blur-sm">
               <h2 className="text-5xl font-black text-white" style={{ fontFamily: HEADING_FONT, WebkitTextStroke: '2px #be185d', textShadow: '0 6px 0 rgba(0,0,0,0.15)' }}>
                 What do you love?
@@ -188,8 +223,8 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
             </div>
           )}
 
-          {/* STEP 3: GOALS */}
-          {step === 3 && (
+          {/* STEP 4: GOALS */}
+          {step === 4 && (
             <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-lime-500/90 p-12 shadow-[0_20px_0_rgba(77,124,15,0.8)] backdrop-blur-sm">
               <h2 className="text-5xl font-black text-white" style={{ fontFamily: HEADING_FONT, WebkitTextStroke: '2px #4d7c0f', textShadow: '0 6px 0 rgba(0,0,0,0.15)' }}>
                 What shall we learn?
@@ -212,8 +247,8 @@ export function OnboardingRoute({ onComplete }: OnboardingRouteProps) {
             </div>
           )}
 
-          {/* STEP 4: LOADING SCREEN */}
-          {step === 4 && (
+          {/* STEP 5: LOADING SCREEN */}
+          {step === 5 && (
             <div className="flex flex-col items-center text-center rounded-[50px] border-[8px] border-white bg-violet-600/90 p-16 shadow-[0_20px_0_rgba(76,29,149,0.8)] backdrop-blur-sm">
               <motion.div 
                 animate={{ rotate: 360 }} 
